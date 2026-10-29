@@ -81,9 +81,6 @@ button:disabled{opacity:.55;cursor:progress}
         <select id="jezSel" disabled><option value="">Elige antes la provincia</option></select>
       </label>
     </div>
-    <label id="l_jezOtra" hidden>Nombre de la Junta
-      <input id="jezOtra" placeholder="Escribe el nombre de la Junta">
-    </label>
     <div class="row">
       <label>Nombre de la coalición
         <input id="coal" value="FRENTE AMPLIO">
@@ -150,6 +147,7 @@ button:disabled{opacity:.55;cursor:progress}
     <button type="submit" id="btn">Descargar el escrito en Word</button>
     <div id="estado" aria-live="polite">Lo que no rellenes saldrá como hueco [entre corchetes] para cubrir a mano.</div>
   </div>
+  <p class="hint" id="aviso">Si encuentras algún error en el formulario o en el escrito, escribe a <b>xerais@movementosumar.gal</b>.</p>
 </form>
 
 <aside class="preview" aria-label="Vista previa">
@@ -33343,7 +33341,7 @@ $('prov').innerHTML='<option value="">Elige la provincia</option>'+PROVS.map(p=>
 $('prov').addEventListener('change',()=>{
   const l=JEZ[$('prov').value]||[]; const sel=$('jezSel');
   sel.disabled=!l.length;
-  sel.innerHTML=l.length?'<option value="">Elige la Junta</option>'+l.map(j=>`<option>${j}</option>`).join('')+'<option value="__otra">Otra (escribir el nombre)</option>':'<option value="">Elige antes la provincia</option>';
+  sel.innerHTML=l.length?'<option value="">Elige la Junta</option>'+l.map(j=>`<option>${j}</option>`).join(''):'<option value="">Elige antes la provincia</option>';
   if(l.length===1) sel.value=l[0];
 });
 try{ $('fecha').value=new Date().toISOString().slice(0,10);}catch(e){}
@@ -33359,7 +33357,7 @@ const or=(v,ph)=>v?T(v):G(ph);
 function modelo(){
   const coal=(val('coal')||'FRENTE AMPLIO').toUpperCase();
   const C=B(coal);
-  const prov=val('prov'), jez=$('jezSel').value==='__otra'?val('jezOtra'):val('jezSel');
+  const prov=val('prov'), jez=val('jezSel');
   const esc=Math.max(0,parseInt($('esc').value||'0',10)||0);
   const adscSi=esc>0 && $('a_si').checked;
   const blocks=[];
@@ -33428,7 +33426,6 @@ function sync(){
   $('bloqueEsc').hidden=esc<=0;
   const no=$('a_no').checked; $('l_quien').hidden=no; $('avisoNo').hidden=!no;
   $('l_bopn').hidden=!$('o_bop').checked;
-  $('l_jezOtra').hidden=$('jezSel').value!=='__otra';
   preview();
 }
 sync();
