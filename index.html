@@ -95,6 +95,11 @@ button:disabled{opacity:.55;cursor:progress}
 
   <fieldset>
     <legend>Representante</legend>
+    <div class="choice" role="radiogroup" aria-label="En calidad de qué actúa">
+      <span class="hint">¿En calidad de qué actúas?</span>
+      <label><input type="radio" name="cal" id="c_zona" value="zona" checked> Representante ante esta Junta Electoral de Zona</label>
+      <label><input type="radio" name="cal" id="c_prov" value="prov"> Representante de la candidatura en la provincia (cuando no hay representante nombrado ante esta Junta)</label>
+    </div>
     <div class="row">
       <label>Nombre y apellidos <input id="nom" placeholder="Ej.: María López García"></label>
       <label>DNI <input id="dni" placeholder="Ej.: 12345678A"></label>
@@ -125,13 +130,14 @@ button:disabled{opacity:.55;cursor:progress}
     </div>
     <div id="bloqueEsc" class="choice" hidden>
       <span class="hint">¿A qué partido pertenece quien ocupó el escaño?</span>
+      <p class="hint">La Junta Electoral Central reparte los resultados de una coalición anterior según el partido de sus diputados electos. Si el escaño es de un partido de la coalición, el escrito lo usa como argumento a nuestro favor. Si es de Podemos o de otro partido que no está en la coalición, ese argumento nos perjudicaría, así que el escrito no lo menciona. Tu respuesta no aparece en el escrito: solo decide si se incluye ese párrafo.</p>
       <label><input type="radio" name="adsc" id="a_si" value="si" checked> A un partido que forma parte de la coalición</label>
       <label><input type="radio" name="adsc" id="a_no" value="no"> A Podemos, a otro partido de fuera, o no lo sé</label>
       <label id="l_quien" class="campo">Persona y partido
         <input id="quien" placeholder="Ej.: Ana Pérez Ruiz, de Movimiento Sumar">
         <small>Si son varios escaños, sepáralos con "y".</small>
       </label>
-      <p class="hint" id="avisoNo" hidden>El escrito no citará el criterio de los candidatos electos, porque en tu provincia jugaría en contra.</p>
+      <p class="hint" id="avisoNo" hidden>De acuerdo: el escrito no incluirá el párrafo de los diputados electos.</p>
     </div>
   </fieldset>
 
@@ -33357,13 +33363,13 @@ const or=(v,ph)=>v?T(v):G(ph);
 function modelo(){
   const coal=(val('coal')||'FRENTE AMPLIO').toUpperCase();
   const C=B(coal);
-  const prov=val('prov'), jez=val('jezSel');
+  const prov=val('prov'), jez=val('jezSel'); const prov_=$('c_prov').checked;
   const esc=Math.max(0,parseInt($('esc').value||'0',10)||0);
   const adscSi=esc>0 && $('a_si').checked;
   const blocks=[];
   const P=(...r)=>blocks.push({k:'p',r});
   blocks.push({k:'p',r:[B('A LA JUNTA ELECTORAL DE ZONA DE '),jez?B(jez.toUpperCase()):G('JUNTA')],left:true});
-  P(T('D./D.ª '),or(val('nom'),'NOMBRE Y APELLIDOS'),T(', con DNI '),or(val('dni'),'DNI'),T(', en su condición de representante de la coalición electoral '),C,T(' ante esa Junta Electoral de Zona en las elecciones al Congreso de los Diputados y al Senado convocadas por el Real Decreto 806/2026, de 5 de octubre, con domicilio a efectos de notificaciones en '),or(val('dom'),'DOMICILIO'),T(' y correo electrónico '),or(val('mail'),'CORREO'),T(', comparece y, como mejor proceda en Derecho,'));
+  P(T('D./D.ª '),or(val('nom'),'NOMBRE Y APELLIDOS'),T(', con DNI '),or(val('dni'),'DNI'),...(prov_?[T(', en su condición de representante de la candidatura de la coalición electoral '),C,T(' en la circunscripción de '),or(prov,'PROVINCIA'),T(', designado ante la Junta Electoral Provincial conforme al artículo 43 de la LOREG, en las elecciones al Congreso de los Diputados y al Senado convocadas por el Real Decreto 806/2026, de 5 de octubre, sin que conste designado representante de la coalición ante esa Junta Electoral de Zona, con domicilio a efectos de notificaciones en ')]:[T(', en su condición de representante de la coalición electoral '),C,T(' ante esa Junta Electoral de Zona en las elecciones al Congreso de los Diputados y al Senado convocadas por el Real Decreto 806/2026, de 5 de octubre, con domicilio a efectos de notificaciones en ')]),or(val('dom'),'DOMICILIO'),T(' y correo electrónico '),or(val('mail'),'CORREO'),T(', comparece y, como mejor proceda en Derecho,'));
   blocks.push({k:'h',t:'EXPONE'});
   let n=0; const N=()=>B(ORD[n++]+'. ');
   const bf=fLarga($('bopf').value);
@@ -33403,7 +33409,7 @@ function modelo(){
   const fl=fLarga($('fecha').value);
   blocks.push({k:'p',r:[T('En '),or(val('loc'),'LOCALIDAD'),T(', a '),or(fl,'FECHA'),T('.')],left:true,sign:true});
   blocks.push({k:'p',r:[T('Fdo.: '),or(val('nom'),'NOMBRE Y APELLIDOS')],left:true,tight:true});
-  blocks.push({k:'p',r:[T('Representante de la coalición electoral '),C,T(' ante la Junta Electoral de Zona de '),jez?T(jez):G('JUNTA')],left:true});
+  blocks.push({k:'p',r:prov_?[T('Representante de la candidatura de la coalición electoral '),C,T(' en la circunscripción de '),or(prov,'PROVINCIA')]:[T('Representante de la coalición electoral '),C,T(' ante la Junta Electoral de Zona de '),jez?T(jez):G('JUNTA')],left:true});
   return {blocks,coal,jez};
 }
 
